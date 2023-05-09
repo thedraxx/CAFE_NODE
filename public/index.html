@@ -6,8 +6,6 @@
     <title>Google Sign In</title>
 </head>
 <body>
-
-
     <div id="g_id_onload"
     data-client_id="653938456309-dnjuih22fio096u7mbjohd39dkj23vog.apps.googleusercontent.com"
     data-callback="handleCredentialResponse"
@@ -23,12 +21,38 @@
     data-shape="rectangular"
     data-logo_alignment="left">
  </div>
+ <button id="signout" onclick="signOut()">Sign Out</button>
 
     
  <script>
     function handleCredentialResponse(response) {
         // Google Token
-       console.log("id_token", response.credential) 
+       //console.log("id_token", response.credential) 
+       const body = {id_token: response.credential}
+
+       fetch("http://localhost:8080/api/auth/google", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(body)
+       })
+       .then(res => res.json())
+       .then(resp => {
+           console.log(resp)
+           localStorage.setItem("email", resp.usuario.correo)
+       })
+       .catch(console.warn())
+    }
+
+    const button = document.getElementById("signout");
+    button.onclick = () => {
+        google.accounts.id.disableAutoSelect();
+        google.accounts.id.revoke(localStorage.getItem("email") || ""), done => {
+            console.log("revoke", done)
+            localStorage.clear()
+            localStorage.reload()
+        };
     }
   </script>  
     <script src="https://accounts.google.com/gsi/client" async defer></script>
