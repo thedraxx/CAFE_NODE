@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 
-const subirArchivo = (files, extensionesValidas = ["png", "jpg", "jpeg", "gif", "txt"]) => {
+const subirArchivo = (files, extensionesValidas = ["png", "jpg", "jpeg", "gif", "txt"], carpeta = "") => {
 
 
     return new Promise((resolve, reject) => {
@@ -11,19 +11,20 @@ const subirArchivo = (files, extensionesValidas = ["png", "jpg", "jpeg", "gif", 
 
         // Validar la extension
         if (!extensionesValidas.includes(extension)) {
-            return reject
+            return reject(
+                `La extension ${extension} no es permitida - ${extensionesValidas}`
+            )
         }
 
-
         const nombreTemp = uuidv4() + "." + extension
-        const uploadPath = path.join(__dirname, '../uploads/', nombreTemp);
+        const uploadPath = path.join(__dirname, '../uploads/', carpeta, nombreTemp);
 
         archivo.mv(uploadPath, (err) => {
             if (err) {
-                return res.status(500).json({ err });
+                return reject({ err });
             }
 
-            return resolve({ msg: 'File uploaded to ' + uploadPath });
+            return resolve(nombreTemp);
         });
     })
 }

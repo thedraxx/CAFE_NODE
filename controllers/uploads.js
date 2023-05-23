@@ -1,6 +1,6 @@
 
 const { response } = require("express");
-const { subirArchivo } = require('../helpers/subir-archivo');
+const { subirArchivo } = require('../helpers');
 
 const cargarArchivo = async (req, res = response) => {
 
@@ -12,7 +12,8 @@ const cargarArchivo = async (req, res = response) => {
     }
 
     try {
-        subirArchivo(req.files)
+        const nombre = await subirArchivo(req.files, undefined, "imgs")
+        res.status(200).json({ nombre })
     } catch (error) {
         res.json(400).json({
             msg: "algo salio mal"
